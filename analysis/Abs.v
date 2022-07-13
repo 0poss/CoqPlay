@@ -3,31 +3,8 @@ Require Import Reals.ROrderedType.
 Require Import Logic.Classical.
 Require Import micromega.Lra.
 Require Import micromega.Lia.
+Load Base.
 Open Scope R_scope.
-
-Lemma Rmult_pos_pos_pos :
-  forall x y:R, x >= 0 -> y >= 0 -> x * y >= 0.
-Proof.
-  intros x y x_pos y_pos.
-  replace 0 with (0*y); auto with real.
-  now apply Rmult_ge_compat_r.
-Qed.
-
-Lemma Rmult_neg_pos_neg :
-  forall x y:R, x <= 0 -> y >= 0 -> x * y <= 0.
-Proof.
-  intros.
-  replace 0 with (0 * y); auto with real.
-Qed.
-
-Lemma Rmult_neg_neg_pos :
-  forall x y:R, x <= 0 -> y <= 0 -> x * y >= 0.
-Proof.
-  intros x y x_neg y_neg.
-  replace 0 with (y * 0); auto with real.
-  rewrite Rmult_comm.
-  now apply Rmult_le_ge_compat_neg_l.
-Qed.
 
 Theorem Rabs_mult_distr :
   forall x y:R, Rabs (x * y) = Rabs x * Rabs y.
@@ -118,28 +95,21 @@ Proof.
   assumption.
 Qed.
 
-Lemma Rsub_add_cancel :
-  forall x y:R, x - y + y = x.
-Proof.
-  intros; lra.
-Qed.
-
 Lemma Rle_opp_le_abs_le:
   forall x y:R, x <= y -> -x <= y -> Rabs x <= y.
 Proof.
   intros.
-
   destruct (Rcase_abs x);
     [now rewrite Rabs_left | now rewrite Rabs_right].
 Qed.
 
-Theorem abs_triangle_opp :
+Theorem Rabs_triangle_opp :
   forall x y:R, Rabs (Rabs x - Rabs y) <= Rabs (x - y).
 Proof.
   intros.
 
   (* Getting |x| - |y| <= |x - y|. *)
-  pose proof (abs_triangle (x-y) y) as Hxy_le.
+  pose proof (Rabs_triangle (x-y) y) as Hxy_le.
   rewrite Rsub_add_cancel in Hxy_le.
   apply (Rplus_le_compat_r (- Rabs y)) in Hxy_le.
   replace (Rabs (x - y) + Rabs y + - Rabs y) with (Rabs (x - y)) in Hxy_le;
@@ -148,7 +118,7 @@ Proof.
     [| lra].
 
   (* Getting -(|x| - |y|) <= |x - y|. *)
-  pose proof (abs_triangle (y-x) x) as Hyx_le.
+  pose proof (Rabs_triangle (y-x) x) as Hyx_le.
   rewrite Rsub_add_cancel in Hyx_le.
   apply (Rplus_le_compat_r (- Rabs x)) in Hyx_le.
   replace (Rabs (y - x) + Rabs x + - Rabs x) with (Rabs (y - x)) in Hyx_le;
