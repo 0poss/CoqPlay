@@ -48,12 +48,15 @@ Proof.
   intro l_lim.
   exists l'.
   intro l'_lim.
-  assert (exists e:R, e > 0) by (exists 1; auto with real).
-  destruct H as [e e_gt_0].
-  destruct l_lim with (e := e) as [N fa_n_ge_N_Rabs_Unn_l_le_e];
-    [assumption|].
-  destruct l'_lim with (e := e) as [N' fa_n_ge_N'_Rabs_Unn_l'_le_e];
-    [assumption|].
+
+  apply Rminus_diag_uniq.
+  apply Rle_forall_gt_0_eq_0.
+  intros e e_gt_0.
+
+  destruct l_lim with (e := e/2) as [N fa_n_ge_N_Rabs_Unn_l_le_e];
+    [lra|].
+  destruct l'_lim with (e := e/2) as [N' fa_n_ge_N'_Rabs_Unn_l'_le_e];
+    [lra|].
 
   (* Getting e/2 > 0. *)
   (* assert (e/2 > 0) as half_e_gt_0 by lra.*)
@@ -75,15 +78,10 @@ Proof.
   rewrite <- Rplus_assoc.
   reflexivity.
 
-  pose proof (Rplus_le_compat (Rabs (Un n0 - l)) (e) (Rabs (Un n0 - l')) (e)).
-  pose proof (H Rabs_n0_l_le_e Rabs_n0_l'_le_e).
-  clear H.
-  rename H0 into HRabs_Rplus_Rabs_le_2e.
-  apply (Rle_trans _ _ _ ll'_triangle) in HRabs_Rplus_Rabs_le_2e as
-    Rabs_ll'_le_2e.
-  
-  assert (e+e > 0) as e_plus_e_gt_0 by lra.
-  generalize Rle_forall_gt_0_eq_0.
-  intro.
+  (* Concluding. *)
+  (* lra does the job but I prefer being more verbose here. *)
+  assert (Rabs (Un n0 - l) + Rabs (Un n0 - l') <= e) as Hle by lra.
+  apply (Rle_trans _ (Rabs (Un n0 - l) + Rabs (Un n0 - l')) _);
+    assumption.
 Qed.
 
